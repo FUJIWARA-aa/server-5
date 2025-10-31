@@ -30,25 +30,68 @@
   <script>
     function dataset() {
       return {
-        data: 'レスポンスデータに置き換わります',
-        name: '',
-        rank: '',
+        data: "レスポンスデータに置き換わります",
+        name: "",
+        rank: "",
 
         // GETリクエスト
         async getData() {
-          const res = await fetch('/api');
+          const res = await fetch("/api");
           const data = await res.json();
           this.data = JSON.stringify(data, null, 2);
         },
 
         // POSTリクエスト
-        async postData() {},
+        async postData() {
+          // メッセージボディをFormDataオブジェクトで用意
+          const { name, rank } = this.getParams();
+          const body = new FormData();
+          body.append("name", name);
+          body.append("rank", rank);
+          const query = new URLSearchParams({
+            name: this.name,
+            rank: this.rank,
+          });
+
+          // bodyプロパティにFormDataをそのまま渡す
+          const res = await fetch("/api", {
+            method: "POST",
+            body: body,
+          });
+          const data = await res.json();
+          this.data = JSON.stringify(data, null, 2);
+        },
 
         // PUTリクエスト
-        async putData() {},
+        async putData() {
+          const body = this.getParams();
+
+          // bodyプロパティに文字列化して指定する
+          const res = await fetch("/api", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+            },
+            body: JSON.stringify(body),
+          });
+          const data = await res.json();
+
+          result.textContent = JSON.stringify(data, null, 2);
+        },
 
         // DELETEリクエスト
-        async deleteData() {}
+        async deleteData() {
+          const body = this.getParams();
+          const res = await fetch("/api", {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+            },
+            body: JSON.stringify(body),
+          });
+          const data = await res.json();
+          this.data = JSON.stringify(data, null, 2);
+        },
       };
     }
   </script>
